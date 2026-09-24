@@ -67,13 +67,26 @@
         height: 100%;
       }
 
-      #room-name, #room-image {
+      #room-image {
         transition: opacity 220ms ease;
       }
 
+      #room-name, #mood, #description {
+        filter: blur(0);
+        transition: opacity 220ms ease, filter 220ms ease;
+      }
+
       #room-content.is-fading #room-name,
+      #room-content.is-fading #mood,
+      #room-content.is-fading #description,
       #room-content.is-fading #room-image {
         opacity: 0;
+      }
+
+      #room-content.is-fading #room-name,
+      #room-content.is-fading #mood,
+      #room-content.is-fading #description {
+        filter: blur(6px);
       }
 
       .room-art {
@@ -244,7 +257,10 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        #room-name, #room-image { transition: none; }
+        #room-name, #room-image, #mood, #description { transition: none; }
+        #room-content.is-fading #room-name,
+        #room-content.is-fading #mood,
+        #room-content.is-fading #description { filter: none; }
       }
     </style>
   </head>
