@@ -1,16 +1,21 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { blockedReasons, directionArrows, keyDirections, rooms, type Direction } from "./rooms";
+import { directionArrows, keyDirections, rooms, type Direction } from "./rooms";
+import { createGame, movePlayer } from "./game";
 
 export default function Lighthouse() {
-  const [currentRoom, setCurrentRoom] = useState("rocks");
+  const [game, setGame] = useState(createGame);
+  const currentRoom = game.currentRoom;
   const [fading, setFading] = useState(false);
   const [message, setMessage] = useState("");
   const moving = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const frame = useRef<number | null>(null);
   const room = rooms[currentRoom];
+  const navigationMessage = message || (game.hasVisitedKitchen
+    ? "The Lamp Room is unlocked."
+    : "Visit the kitchen to unlock the Lamp Room.");
 
   useEffect(() => {
     document.body.dataset.room = currentRoom;
@@ -23,9 +28,9 @@ export default function Lighthouse() {
 
   const move = useCallback((direction: Direction) => {
     if (moving.current) return;
-    const destination = rooms[currentRoom].exits[direction];
-    if (!destination) {
-      setMessage(blockedReasons[direction]);
+    const result = movePlayer(game, direction);
+    if (result.state.currentRoom === currentRoom) {
+      setMessage(result.message);
       return;
     }
     moving.current = true;
@@ -33,17 +38,19 @@ export default function Lighthouse() {
     setFading(true);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     timer.current = setTimeout(() => {
-      setCurrentRoom(destination);
+      setGame(result.state);
       // Keep the new content hidden for a frame before the entrance transition.
       frame.current = requestAnimationFrame(() => {
         frame.current = requestAnimationFrame(() => {
           setFading(false);
           moving.current = false;
-          setMessage(`You are in ${rooms[destination].name}.`);
+          setMessage(!game.hasVisitedKitchen && result.state.hasVisitedKitchen
+            ? "Lamp Room unlocked. You can go in now."
+            : result.message);
         });
       });
     }, reducedMotion ? 0 : 220);
-  }, [currentRoom]);
+  }, [game, currentRoom]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -83,21 +90,30 @@ export default function Lighthouse() {
             <p id="description">{room.description}</p>
             <nav className="navigation" aria-label="Move to another room">
               <span className="label">Explore next</span>
+              <p id="message" className={game.hasVisitedKitchen ? "notice notice-open" : "notice notice-locked"}
+                role="status" aria-live="polite" aria-atomic="true">{navigationMessage}</p>
               <div id="directions">
                 {(Object.keys(room.exits) as Direction[]).map((direction, index) => {
                   const destination = rooms[room.exits[direction]!].name;
+                  const locked = movePlayer(game, direction).state.currentRoom === currentRoom;
                   return (
-                    <button key={index} className="exit-button" type="button"
-                      aria-label={`Go ${direction} to ${destination}`}
+                    <button key={index} className={`exit-button${locked ? " exit-locked" : ""}`} type="button"
+                      aria-label={locked ? `${destination} locked. Visit the kitchen to unlock.` : `Go ${direction} to ${destination}`}
+                      aria-describedby={locked ? "message" : undefined}
                       onClick={() => move(direction)}>
-                      <span className="exit-direction">{directionArrows[direction]}</span>
+                      <span className="exit-direction">{directionArrows[direction]}{locked && <span className="lock-badge">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                          <rect x="3" y="7" width="10" height="7" rx="2" />
+                          <path d="M5 7V5a3 3 0 0 1 6 0v2" />
+                        </svg>Locked
+                      </span>}</span>
                       <span className="exit-destination">{destination}</span>
+                      <span className="exit-help">{locked ? "Visit kitchen first" : "Tap to enter"}</span>
                     </button>
                   );
                 })}
               </div>
             </nav>
-            <p id="message" role="status" aria-live="polite">{message}</p>
           </section>
         </div>
       </main>

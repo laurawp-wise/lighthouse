@@ -13,7 +13,54 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Test movement rules
+        run: npm test
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate Next.js types and check TypeScript
+        run: npm run typecheck
+
   deploy:
+    name: Deploy
+    needs: [tests, lint, typecheck]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -21,10 +68,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Lint
-        run: npm run lint
       - name: Build Next.js and OpenNext Worker
         run: npm run build:worker
       - name: Deploy OpenNext Worker

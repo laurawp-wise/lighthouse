@@ -46,7 +46,7 @@ main {
   position: relative;
   width: min(94vw, 1280px);
   height: min(84svh, 780px);
-  min-height: 740px;
+  min-height: 860px;
   overflow: hidden;
   border-radius: 26px;
   background: var(--panel);
@@ -232,7 +232,7 @@ h1 {
 }
 
 .exit-button {
-  min-height: 72px;
+  min-height: 104px;
   padding: 0.7rem;
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: 12px;
@@ -245,8 +245,11 @@ h1 {
 }
 
 .exit-button span { display: block; }
-.exit-direction { color: var(--accent); font-size: 0.72rem; margin-bottom: 0.45rem; }
+.exit-button .exit-direction { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.25rem; color: var(--accent); font-size: 0.72rem; margin-bottom: 0.45rem; }
 .exit-destination { font-size: 0.8rem; line-height: 1.35; }
+.exit-help { margin-top: 0.45rem; font-size: 0.68rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+.exit-button .lock-badge { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem; color: #f6d28c; }
+.exit-locked { border-style: dashed; border-color: #a08754; }
 .exit-button:active { background: color-mix(in srgb, var(--accent) 24%, var(--panel)); }
 .exit-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 @media (hover: hover) {
@@ -254,11 +257,20 @@ h1 {
 }
 
 #message {
-  min-height: 1.4em;
-  margin: 0.8rem 0 0;
-  color: #dc9a83;
-  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  min-height: 4.5rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.45;
 }
+
+.notice-locked { color: #ffe0a3; border-color: #8c7041; background: #30271b; }
+.notice-open { color: #d2e9df; border-color: #49685b; background: #1c2e26; }
 
 .hint {
   position: fixed;
@@ -277,7 +289,7 @@ h1 {
   #room-content { display: flex; flex-direction: column; }
   .room-art { aspect-ratio: 16 / 9; min-height: 0; height: 30svh; }
   .room-art::after { background: linear-gradient(180deg, transparent 70%, var(--panel)); }
-  .room-panel { min-height: 56svh; padding: 1.5rem 1.35rem calc(11rem + env(safe-area-inset-bottom)); }
+  .room-panel { min-height: 56svh; padding: 1.5rem 1.35rem calc(18rem + env(safe-area-inset-bottom)); }
   h1 { max-width: none; min-height: 2em; margin: 1.5rem 0; font-size: clamp(2.5rem, 11vw, 3.5rem); line-height: 1; }
   #description { min-height: 8.5em; }
   .hint { display: none; }

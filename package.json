@@ -8,7 +8,8 @@
     "build:worker": "opennextjs-cloudflare build",
     "preview": "npm run build:worker && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare deploy",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
     "start": "next start",
     "lint": "eslint"
   },
