@@ -1,8 +1,12 @@
 {
   "name": "lighthouse",
+  "main": ".open-next/worker.js",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "compatibility_date": "2026-09-24",
   "workers_dev": true,
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "lighthouse" }]
 }
