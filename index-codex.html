@@ -76,6 +76,16 @@
         transition: opacity 220ms ease, filter 220ms ease;
       }
 
+      #room-name, #description {
+        transform: translateY(0);
+        transition: opacity 220ms ease-out, filter 220ms ease-out, transform 220ms ease-out;
+      }
+
+      #room-content.is-fading #room-name,
+      #room-content.is-fading #description {
+        transform: translateY(8px);
+      }
+
       #room-content.is-fading #room-name,
       #room-content.is-fading #mood,
       #room-content.is-fading #description,
@@ -293,7 +303,7 @@
         #room-name, #room-image, #mood, #description { transition: none; }
         #room-content.is-fading #room-name,
         #room-content.is-fading #mood,
-        #room-content.is-fading #description { filter: none; }
+        #room-content.is-fading #description { filter: none; transform: none; }
       }
     </style>
   </head>
