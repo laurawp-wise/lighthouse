@@ -117,7 +117,7 @@ function move(direction: Direction): void {
       roomContent.classList.remove("is-fading");
       moving = false;
     });
-  }, 220);
+  }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220);
 }
 
 document.addEventListener("keydown", (event: KeyboardEvent) => {

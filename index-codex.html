@@ -28,7 +28,6 @@
         padding: clamp(0.75rem, 2.5vw, 2rem);
         overflow-x: hidden;
         background: var(--deep);
-        transition: background 600ms ease;
       }
 
       body::before {
@@ -43,7 +42,6 @@
         background: var(--glow);
         filter: blur(120px);
         opacity: 0.6;
-        transition: background 600ms ease;
       }
 
       body[data-room="stairs"] { --deep: #0b1115; --glow: #314650; --accent: #abc0c8; --panel: #11191d; }
@@ -60,7 +58,6 @@
         border-radius: 26px;
         background: var(--panel);
         box-shadow: 0 34px 90px rgba(0, 0, 0, 0.35);
-        transition: background 600ms ease;
       }
 
       #room-content {
@@ -68,14 +65,15 @@
         grid-template-columns: minmax(0, 1.4fr) minmax(360px, 0.75fr);
         width: 100%;
         height: 100%;
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 220ms ease, transform 220ms ease;
       }
 
-      #room-content.is-fading {
+      #room-name, #room-image {
+        transition: opacity 220ms ease;
+      }
+
+      #room-content.is-fading #room-name,
+      #room-content.is-fading #room-image {
         opacity: 0;
-        transform: translateY(8px);
       }
 
       .room-art {
@@ -112,6 +110,7 @@
       }
 
       .topline {
+        min-height: 3.4rem;
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
@@ -129,11 +128,14 @@
       }
 
       h1 {
+        min-height: 2.46em;
+        display: flex;
+        align-items: flex-end;
         max-width: 7ch;
         margin: auto 0 1.7rem;
         color: var(--ink);
         font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(4.2rem, 7vw, 7.5rem);
+        font-size: clamp(3rem, 5vw, 5rem);
         font-weight: 400;
         line-height: 0.82;
         letter-spacing: -0.065em;
@@ -181,7 +183,7 @@
 
       #description {
         max-width: 34ch;
-        min-height: 6.2em;
+        min-height: 8.5em;
         margin: 0;
         color: var(--muted);
         font-size: 1rem;
@@ -237,12 +239,12 @@
         .room-art::after { background: linear-gradient(180deg, transparent 70%, var(--panel)); }
         .room-panel { min-height: 56svh; padding: 1.5rem 1.35rem 3rem; }
         h1 { margin: 3.5rem 0 1.5rem; font-size: clamp(4rem, 18vw, 6rem); }
-        #description { min-height: auto; }
+        #description { min-height: 8.5em; }
         .hint { display: none; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        body, body::before, main, #room-content { transition: none; }
+        #room-name, #room-image { transition: none; }
       }
     </style>
   </head>

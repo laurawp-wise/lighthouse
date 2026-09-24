@@ -99,7 +99,7 @@ function move(direction) {
             roomContent.classList.remove("is-fading");
             moving = false;
         });
-    }, 220);
+    }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220);
 }
 document.addEventListener("keydown", (event) => {
     const direction = keyDirections[event.key];
