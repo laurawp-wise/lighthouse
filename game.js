@@ -55,7 +55,7 @@ let currentRoom = "rocks";
 const roomName = document.querySelector("#room-name");
 const mood = document.querySelector("#mood");
 const description = document.querySelector("#description");
-const directions = document.querySelector("#directions");
+const exitButtons = document.querySelectorAll(".exit-button");
 const message = document.querySelector("#message");
 const roomContent = document.querySelector("#room-content");
 const roomImage = document.querySelector("#room-image");
@@ -69,9 +69,15 @@ function render() {
     description.textContent = room.description;
     roomImage.src = room.image;
     roomImage.alt = room.imageAlt;
-    directions.textContent = Object.keys(room.exits)
-        .map((direction) => directionArrows[direction])
-        .join("  ·  ");
+    const exits = Object.keys(room.exits);
+    exitButtons.forEach((button, index) => {
+        const direction = exits[index];
+        const destination = rooms[room.exits[direction]].name;
+        button.dataset.direction = direction;
+        button.querySelector(".exit-direction").textContent = directionArrows[direction];
+        button.querySelector(".exit-destination").textContent = destination;
+        button.setAttribute("aria-label", `Go ${direction} to ${destination}`);
+    });
     mapRooms.forEach((mapRoom) => {
         if (mapRoom.dataset.room === currentRoom) {
             mapRoom.setAttribute("aria-current", "location");
@@ -98,6 +104,7 @@ function move(direction) {
         requestAnimationFrame(() => {
             roomContent.classList.remove("is-fading");
             moving = false;
+            message.textContent = `You are in ${rooms[currentRoom].name}.`;
         });
     }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220);
 }
@@ -107,5 +114,8 @@ document.addEventListener("keydown", (event) => {
         return;
     event.preventDefault();
     move(direction);
+});
+exitButtons.forEach((button) => {
+    button.addEventListener("click", () => move(button.dataset.direction));
 });
 render();

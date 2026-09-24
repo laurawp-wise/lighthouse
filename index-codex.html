@@ -53,7 +53,7 @@
         position: relative;
         width: min(94vw, 1280px);
         height: min(84svh, 780px);
-        min-height: 640px;
+        min-height: 740px;
         overflow: hidden;
         border-radius: 26px;
         background: var(--panel);
@@ -204,8 +204,7 @@
       }
 
       .navigation {
-        display: flex;
-        align-items: center;
+        display: grid;
         gap: 0.8rem;
         flex-wrap: wrap;
         margin-top: 2rem;
@@ -220,10 +219,35 @@
       }
 
       #directions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
         color: var(--accent);
         font-size: 0.73rem;
         font-weight: 700;
         letter-spacing: 0.05em;
+      }
+
+      .exit-button {
+        min-height: 72px;
+        padding: 0.7rem;
+        border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--accent) 9%, var(--panel));
+        color: var(--ink);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+
+      .exit-button span { display: block; }
+      .exit-direction { color: var(--accent); font-size: 0.72rem; margin-bottom: 0.45rem; }
+      .exit-destination { font-size: 0.8rem; line-height: 1.35; }
+      .exit-button:active { background: color-mix(in srgb, var(--accent) 24%, var(--panel)); }
+      .exit-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+      @media (hover: hover) {
+        .exit-button:hover { border-color: var(--accent); }
       }
 
       #message {
@@ -248,12 +272,21 @@
         body { display: block; padding: 0; }
         main { width: 100%; height: auto; min-height: 100svh; border-radius: 0; }
         #room-content { display: flex; flex-direction: column; }
-        .room-art { aspect-ratio: 4 / 3; min-height: 42svh; }
+        .room-art { aspect-ratio: 16 / 9; min-height: 0; height: 30svh; }
         .room-art::after { background: linear-gradient(180deg, transparent 70%, var(--panel)); }
-        .room-panel { min-height: 56svh; padding: 1.5rem 1.35rem 3rem; }
-        h1 { margin: 3.5rem 0 1.5rem; font-size: clamp(4rem, 18vw, 6rem); }
+        .room-panel { min-height: 56svh; padding: 1.5rem 1.35rem calc(11rem + env(safe-area-inset-bottom)); }
+        h1 { max-width: none; min-height: 2em; margin: 1.5rem 0; font-size: clamp(2.5rem, 11vw, 3.5rem); line-height: 1; }
         #description { min-height: 8.5em; }
         .hint { display: none; }
+        .navigation {
+          position: fixed;
+          z-index: 5;
+          inset: auto 0 0;
+          margin: 0;
+          padding: 0.85rem 1.35rem calc(0.85rem + env(safe-area-inset-bottom));
+          background: var(--panel);
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -283,15 +316,18 @@
           <h1 id="room-name"></h1>
           <div class="rule" aria-hidden="true"></div>
         <p id="description"></p>
-        <div class="navigation">
-          <span class="label">Paths open</span>
-          <span id="directions"></span>
-        </div>
+        <nav class="navigation" aria-label="Move to another room">
+          <span class="label">Explore next</span>
+          <div id="directions">
+            <button class="exit-button" type="button"><span class="exit-direction"></span><span class="exit-destination"></span></button>
+            <button class="exit-button" type="button"><span class="exit-direction"></span><span class="exit-destination"></span></button>
+          </div>
+        </nav>
           <p id="message" role="status" aria-live="polite"></p>
         </section>
       </div>
     </main>
-    <p class="hint">Move with the arrow keys</p>
+    <p class="hint">Choose a path or use the arrow keys</p>
     <script src="game.js" defer></script>
   </body>
 </html>
