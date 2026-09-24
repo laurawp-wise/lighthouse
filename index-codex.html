@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Last Light</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Georgia, "Times New Roman", serif;
+        background: #071217;
+        color: #e7e2d2;
+        --deep: #071217;
+        --glow: #17333d;
+        --accent: #d8b45f;
+        --ink: #fff9e8;
+        --muted: #c7cfca;
+        --panel: rgba(6, 17, 21, 0.9);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        padding: clamp(1rem, 4vw, 3rem) 1rem 4rem;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 72% 14%, var(--glow), transparent 34rem),
+          linear-gradient(155deg, var(--deep) 0%, #02080b 100%);
+        transition: background 600ms ease;
+      }
+
+      body[data-room="stairs"] { --deep: #08141d; --glow: #244251; --accent: #9ab4c0; --panel: rgba(8, 20, 29, 0.91); }
+      body[data-room="lamp"] { --deep: #211408; --glow: #774817; --accent: #f2bd53; --panel: rgba(29, 18, 8, 0.91); }
+      body[data-room="kitchen"] { --deep: #10201a; --glow: #275448; --accent: #7fb4a7; --panel: rgba(13, 27, 23, 0.92); }
+      body[data-room="rocks"] { --deep: #0d1025; --glow: #343568; --accent: #aaa6e2; --panel: rgba(11, 14, 34, 0.91); }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.16;
+        background: repeating-linear-gradient(105deg, transparent 0 36px, #c6e3e1 37px 38px, transparent 39px 74px);
+        animation: rain 7s linear infinite;
+      }
+
+      main {
+        width: min(94vw, 820px);
+        padding: clamp(1.25rem, 4vw, 2.6rem);
+        border: 1px solid rgba(221, 225, 206, 0.2);
+        border-radius: 3px;
+        background: var(--panel);
+        box-shadow: 0 32px 80px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(10px);
+        transition: background 600ms ease;
+      }
+
+      .topline {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1.5rem;
+      }
+
+      .eyebrow {
+        margin: 0 0 0.65rem;
+        color: var(--accent);
+        font: 700 0.72rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(2.35rem, 7vw, 4.7rem);
+        font-weight: 400;
+        line-height: 0.92;
+        letter-spacing: -0.045em;
+      }
+
+      .rule {
+        width: 4rem;
+        height: 1px;
+        margin: 1.25rem 0;
+        background: var(--accent);
+      }
+
+      .map {
+        flex: 0 0 auto;
+        display: grid;
+        grid-template-columns: repeat(2, 2.1rem);
+        grid-template-rows: repeat(2, 2.1rem);
+        gap: 0.3rem;
+        padding: 0.5rem;
+        border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .map-room {
+        position: relative;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #83908f;
+        font: 0.62rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      .map-room[aria-current="location"] {
+        border-color: var(--accent);
+        color: var(--ink);
+        background: color-mix(in srgb, var(--accent) 19%, transparent);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, transparent);
+      }
+
+      .map-room[aria-current="location"]::after {
+        content: "";
+        position: absolute;
+        width: 0.38rem;
+        height: 0.38rem;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+      }
+
+      .map-room[aria-current="location"] span { opacity: 0; }
+
+      #room-content {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 220ms ease, transform 220ms ease;
+      }
+
+      #room-content.is-fading {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      .room-art {
+        position: relative;
+        aspect-ratio: 3 / 2;
+        margin: 0 0 1.35rem;
+        overflow: hidden;
+        border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+        background: #020607;
+      }
+
+      .room-art::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.4);
+      }
+
+      #room-image {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      #description {
+        max-width: 56ch;
+        min-height: 3.8em;
+        margin: 0;
+        color: var(--muted);
+        font-size: clamp(1.05rem, 2.6vw, 1.25rem);
+        line-height: 1.55;
+      }
+
+      .navigation {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2.2rem;
+        padding-top: 1.1rem;
+        border-top: 1px solid rgba(221, 225, 206, 0.14);
+      }
+
+      .label {
+        color: #82918e;
+        font: 0.7rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      #directions {
+        color: var(--accent);
+        font: 700 0.84rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: 0.08em;
+      }
+
+      #message {
+        min-height: 1.5em;
+        margin: 1.25rem 0 0;
+        color: #d99379;
+        font-style: italic;
+      }
+
+      .hint {
+        position: fixed;
+        bottom: 1.25rem;
+        color: #70807e;
+        font: 0.68rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      @keyframes rain {
+        to { transform: translate3d(-40px, 80px, 0); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        body::before { animation: none; }
+        body, main, #room-content { transition: none; }
+      }
+
+      @media (max-width: 520px) {
+        .map { grid-template-columns: repeat(2, 1.75rem); grid-template-rows: repeat(2, 1.75rem); }
+        .room-art { margin-top: 1rem; }
+      }
+    </style>
+  </head>
+  <body data-room="rocks">
+    <main aria-labelledby="room-name">
+      <div class="topline">
+        <div>
+          <p class="eyebrow">The Last Light · <span id="mood"></span></p>
+          <h1 id="room-name"></h1>
+        </div>
+        <div class="map" aria-label="Lighthouse map">
+          <div class="map-room" data-room="stairs" aria-label="Spiral Stair"><span>ST</span></div>
+          <div class="map-room" data-room="lamp" aria-label="Lamp Room"><span>LR</span></div>
+          <div class="map-room" data-room="kitchen" aria-label="Keeper's Kitchen"><span>KK</span></div>
+          <div class="map-room" data-room="rocks" aria-label="Rocks"><span>RK</span></div>
+        </div>
+      </div>
+      <div class="rule" aria-hidden="true"></div>
+      <div id="room-content">
+        <figure class="room-art">
+          <img id="room-image" src="assets/rocks.png" alt="" />
+        </figure>
+        <p id="description"></p>
+        <div class="navigation">
+          <span class="label">Paths open</span>
+          <span id="directions"></span>
+        </div>
+      </div>
+      <p id="message" role="status" aria-live="polite"></p>
+    </main>
+    <p class="hint">Move with the arrow keys</p>
+    <script src="game.js" defer></script>
+  </body>
+</html>
