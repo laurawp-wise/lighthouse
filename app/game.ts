@@ -21,6 +21,10 @@ export function movePlayer(state: GameState, direction: Direction): MoveResult {
     return { state, message: blockedReasons[direction] };
   }
 
+  if (destination === "lamp" && !state.hasVisitedKitchen) {
+    return { state, message: "The lamp room door is locked." };
+  }
+
   return {
     state: {
       currentRoom: destination,
